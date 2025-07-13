@@ -5,11 +5,14 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"regexp"
 )
 
 func main() {
 
 	keys := []string{"ТНС%20энерго%20НН", "энергосбыт", "ТНС"}
+
+	regularExpressions := regexp.MustCompile(`https://vk\.com/(wall[-]?\d+_\d+|public\d+)`)
 
 	for _, k := range keys {
 
@@ -46,7 +49,18 @@ func main() {
 			fmt.Println("Ошибка при чтении ответа:", err)
 			return
 		}
-		fmt.Println(string(body))
+
+		// fmt.Println(string(body))
+
+		matches := regularExpressions.FindAllString(string(body), -1)
+		if len(matches) == 0 {
+			fmt.Println("Увы")
+		}
+
+		fmt.Printf("Ссылки по запросу \"%s\":\n", k)
+		for _, link := range matches {
+			fmt.Println(link)
+		}
 	}
 
 }
