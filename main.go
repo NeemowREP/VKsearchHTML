@@ -1,11 +1,14 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"net/http"
 	"net/url"
 	"regexp"
+
+	"github.com/chromedp/chromedp"
 )
 
 func main() {
@@ -13,6 +16,17 @@ func main() {
 	keys := []string{"ТНС%20энерго%20НН", "энергосбыт", "ТНС"}
 
 	regularExpressions := regexp.MustCompile(`https://vk\.com/(wall[-]?\d+_\d+|public\d+)`)
+
+	opts := append(chromedp.DefaultExecAllocatorOptions[:],
+		chromedp.Flag("headless", true),
+		chromedp.UserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64)"),
+	)
+
+	ctx, cancel := chromedp.NewExecAllocator(context.Background(), opts...)
+	defer cancel()
+
+	ctx, cancel = chromedp.NewContext(ctx)
+	defer cancel()
 
 	for _, k := range keys {
 
